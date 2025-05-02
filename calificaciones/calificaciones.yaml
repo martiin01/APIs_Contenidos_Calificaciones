@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: Cineverse Calificaciones API
+  description: Microservicio para gestionar las calificaciones y comentarios de los contenidos en Cineverse
+  version: 1.1.0
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+  /calificaciones:
+    post:
+      summary: Calificar contenido
+      description: Permite a los usuarios calificar un contenido y añadir comentarios.
+      operationId: calificarContenido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calificacion'
+      responses:
+        '201':
+          description: Calificación registrada correctamente
+        '400':
+          description: Datos inválidos
+
+  /calificaciones/{id}:
+    get:
+      summary: Obtener calificaciones de un contenido
+      description: Muestra las calificaciones y comentarios promedio para un contenido específico.
+      parameters:
+        - in: path
+          name: id_contenido
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Calificaciones obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calificacion'
+        '404':
+          description: Contenido no encontrado
+
+components:
+  schemas:
+    Calificacion:
+      type: object
+      properties:
+        idContenido:
+          type: integer
+        idUsuario:
+          type: integer
+        puntuacion:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comentario:
+          type: string
+        fecha:
+          type: string
+          format: date

@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  description: Microservicio para gestionar las calificaciones y comentarios de los
+    contenidos en Cineverse
+  title: Cineverse Calificaciones API
+  version: 1.1.0
+servers:
+- url: http://localhost:8080/api
+paths:
+  /calificaciones:
+    post:
+      description: Permite a los usuarios calificar un contenido y añadir comentarios.
+      operationId: calificar_contenido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calificacion'
+      responses:
+        "201":
+          description: Calificación registrada correctamente
+        "400":
+          description: Datos inválidos
+      summary: Calificar contenido
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /calificaciones/{id_contenido}:
+    get:
+      description: Muestra las calificaciones y comentarios promedio para un contenido
+        específico.
+      operationId: calificaciones_id_get
+      parameters:
+      - explode: false
+        in: path
+        name: id_contenido
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calificacion'
+          description: Calificaciones obtenidas exitosamente
+        "404":
+          description: Contenido no encontrado
+      summary: Obtener calificaciones de un contenido
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+components:
+  schemas:
+    Calificacion:
+      example:
+        fecha: 2000-01-23
+        puntuacion: 1
+        idContenido: 0
+        idUsuario: 6
+        comentario: comentario
+      properties:
+        idContenido:
+          title: idContenido
+          type: integer
+        idUsuario:
+          title: idUsuario
+          type: integer
+        puntuacion:
+          maximum: 5
+          minimum: 1
+          title: puntuacion
+          type: integer
+        comentario:
+          title: comentario
+          type: string
+        fecha:
+          format: date
+          title: fecha
+          type: string
+      title: Calificacion
+      type: object
