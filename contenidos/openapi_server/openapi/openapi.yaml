@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  description: "Gestión de contenidos, filtrado y reproducción de medios en Cineverse"
+  title: Cineverse Contenidos API
+  version: 1.1.0
+servers:
+- url: http://localhost:8080/api
+paths:
+  /contenidos:
+    get:
+      description: "Devuelve una lista completa de todos los contenidos disponibles en la plataforma, con opciones para filtrar por género y ordenar por fecha o popularidad."
+      operationId: obtener_catalogo
+      parameters:
+      - description: Filtrar los contenidos por género.
+        explode: true
+        in: query
+        name: genero
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Ordenar los contenidos por popularidad o fecha de lanzamiento.
+        explode: true
+        in: query
+        name: orden
+        required: false
+        schema:
+          type: string
+          enum:
+          - popularidad
+          - fecha
+        style: form
+      responses:
+        "200":
+          description: Catálogo obtenido correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contenido'
+      summary: Obtener catálogo completo de contenidos
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /contenidos/{contenido_id}:
+    get:
+      description: "Obtiene la información completa de un contenido específico, incluyendo descripción, duración, género y calificaciones promedio."
+      operationId: contenidos_id_get
+      parameters:
+      - in: path
+        name: contenido_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Detalles del contenido obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+        "404":
+          description: Contenido no encontrado
+      summary: Obtener detalles de un contenido
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /contenidos/{contenido_id}/reproducir:
+    get:
+      description: Permite la reproducción del contenido seleccionado en alta calidad.
+      operationId: reproducir_contenido
+      parameters:
+      - in: path
+        name: contenido_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Reproducción iniciada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url_reproduccion:
+                    type: string
+        "404":
+          description: Contenido no encontrado
+      summary: Reproducir contenido en alta calidad
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+components:
+  schemas:
+    Contenido:
+      type: object
+      title: Contenido
+      properties:
+        id_contenido:
+          type: integer
+          title: id_contenido
+        título:
+          type: string
+          title: título
+        descripción:
+          type: string
+          title: descripción
+        género:
+          type: string
+          title: género
+        duración:
+          type: integer
+          title: duración
+        año_lanzamiento:
+          type: integer
+          title: año_lanzamiento
+        rating:
+          type: number
+          format: float
+          title: rating
+        url_video:
+          type: string
+          title: url_video
+        thumbnail:
+          type: string
+          title: thumbnail
+      example:
+        id_contenido: 1
+        título: "Ejemplo de título"
+        descripción: "Ejemplo de descripción"
+        género: "Drama"
+        duración: 120
+        año_lanzamiento: 2021
+        rating: 8.5
+        url_video: "https://example.com/video.mp4"
+        thumbnail: "https://example.com/thumbnail.jpg"

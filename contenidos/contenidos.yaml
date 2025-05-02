@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: Cineverse Contenidos API
+  description: Gestión de contenidos, filtrado y reproducción de medios en Cineverse
+  version: 1.1.0
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+  /contenidos:
+    get:
+      summary: Obtener catálogo completo de contenidos
+      description: Devuelve una lista completa de todos los contenidos disponibles en la plataforma, con opciones para filtrar por género y ordenar por fecha o popularidad.
+      operationId: obtenerCatalogo
+      parameters:
+        - name: genero
+          in: query
+          description: Filtrar los contenidos por género.
+          schema:
+            type: string
+        - name: orden
+          in: query
+          description: Ordenar los contenidos por popularidad o fecha de lanzamiento.
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        '200':
+          description: Catálogo obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+
+  /contenidos/{id}:
+    get:
+      summary: Obtener detalles de un contenido
+      description: Obtiene la información completa de un contenido específico, incluyendo descripción, duración, género, y calificaciones promedio.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles del contenido obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contenido'
+        '404':
+          description: Contenido no encontrado
+
+  /contenidos/{id}/reproducir:
+    get:
+      summary: Reproducir contenido en alta calidad
+      description: Permite la reproducción del contenido seleccionado en alta calidad.
+      operationId: reproducirContenido
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reproducción iniciada correctamente
+        '404':
+          description: Contenido no encontrado
+
+components:
+  schemas:
+    Contenido:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+        descripcion:
+          type: string
+        genero:
+          type: string
+        duracion:
+          type: integer
+        añoLanzamiento:
+          type: integer
+        rating:
+          type: number
+          format: float
+        urlVideo:
+          type: string
+        thumbnail:
+          type: string
